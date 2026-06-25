@@ -1,55 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-
-  <!-- Homepage -->
-  <url>
-    <loc>https://ny.flyuss.com/</loc>
-    <lastmod>2025-03-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-  <!-- Services -->
-  <url>
-    <loc>https://ny.flyuss.com/#services</loc>
-    <lastmod>2025-03-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Airports -->
-  <url>
-    <loc>https://ny.flyuss.com/#airports</loc>
-    <lastmod>2025-03-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Why Us -->
-  <url>
-    <loc>https://ny.flyuss.com/#why</loc>
-    <lastmod>2025-03-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- FAQ -->
-  <url>
-    <loc>https://ny.flyuss.com/#faq</loc>
-    <lastmod>2025-03-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Contact -->
-  <url>
-    <loc>https://ny.flyuss.com/#contact</loc>
-    <lastmod>2025-03-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://ny.flyuss.com/pages/american-airlines-faa-ground-stop-new-york-laguardia-lga.html</loc><lastmod>2026-06-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ny.flyuss.com/pages/american-airlines-flight-diversion-new-york-jfk-jfk.html</loc><lastmod>2026-06-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ny.flyuss.com/pages/american-airlines-mass-cancellations-new-york-jfk-jfk.html</loc><lastmod>2026-06-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ny.flyuss.com/pages/british-airways-faa-ground-stop-newark-ewr-help-now.html</loc><lastmod>2026-06-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ny.flyuss.com/pages/delta-air-lines-faa-ground-stop-new-york-jfk-jfk-help-now.html</loc><lastmod>2026-06-25</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
 </urlset>
