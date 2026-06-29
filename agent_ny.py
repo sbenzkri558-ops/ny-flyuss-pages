@@ -105,11 +105,7 @@ def fetch_with_retry(url, method='get', headers=None, json_body=None, data=None,
 # AIRLINES
 # ══════════════════════════════════════════
 AIRLINES = {
-    'american': {'name': 'American Airlines', 'phone': '(866) 203-7940', 'tel': 'tel:+18662037940', 'rpm': 28, 'color': '#2979ff'},
-    'united':   {'name': 'United Airlines',   'phone': '(866) 203-7940', 'tel': 'tel:+18662037940', 'rpm': 28, 'color': '#00e5ff'},
     'delta':    {'name': 'Delta Air Lines',   'phone': '(844) 833-1051', 'tel': 'tel:+18448331051', 'rpm': 28, 'color': '#ff1744'},
-    'british':  {'name': 'British Airways',   'phone': '(844) 922-0880', 'tel': 'tel:+18449220880', 'rpm': 22, 'color': '#d500f9'},
-    'japan':    {'name': 'Japan Airlines',    'phone': '(844) 922-0880', 'tel': 'tel:+18449220880', 'rpm': 22, 'color': '#ff6d00'},
 }
 
 # ══════════════════════════════════════════
@@ -173,11 +169,7 @@ ALL_EVENTS = EVENTS_CRITICAL + EVENTS_HIGH + EVENTS_MEDIUM
 # ARTICLE IMAGES
 # ══════════════════════════════════════════
 AIRLINE_IMAGES = {
-    'american': 'https://images.unsplash.com/photo-1556388158-158ea5ccacbd?w=1200&q=80',
-    'united':   'https://images.unsplash.com/photo-1529074963764-98f45c47344b?w=1200&q=80',
     'delta':    'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80',
-    'british':  'https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=1200&q=80',
-    'japan':    'https://images.unsplash.com/photo-1542296332-2e4473faf563?w=1200&q=80',
 }
 
 TITLE_TEMPLATES = [
@@ -514,15 +506,15 @@ def get_google_trends():
     print('[Bing Autosuggest] Scanning crisis signals...')
     results = []
     seeds = [
-        'american airlines cancelled JFK',
+        'delta flight cancelled JFK',
         'delta flight delayed JFK',
-        'united airlines cancelled EWR',
-        'british airways cancelled JFK',
+        'delta airlines cancelled EWR',
+        'delta airlines refund JFK',
         'faa ground stop JFK LGA',
         'JFK airport closed today',
         'LGA flight cancelled compensation',
-        'airline strike New York 2026',
-        'american airlines stranded JFK',
+        'delta airlines strike New York 2026',
+        'delta airlines stranded JFK',
         'delta cancelled refund JFK',
     ]
     crisis_words = ['cancel','delay','strike','close','ground','emergency','alert','warning','disruption','stranded','refund']
@@ -571,18 +563,18 @@ def get_bing_trends():
     Extracts actual crisis data from news titles instead of random choices.
     """
     queries = [
-        'American Airlines cancelled JFK today',
         'Delta flight cancelled JFK today',
-        'United Airlines delayed EWR today',
-        'British Airways cancelled JFK today',
+        'Delta Air Lines cancelled JFK today',
+        'Delta Airlines delayed EWR today',
+        'Delta flight cancelled LGA today',
         'FAA ground stop New York today',
         'JFK airport closed today',
         'LGA airport delays today',
         'EWR flights cancelled today',
-        'airline strike New York today',
+        'Delta Airlines strike New York today',
         'JFK airport emergency today',
         'ATC outage New York flights',
-        'airline IT outage JFK LGA EWR',
+        'Delta IT outage JFK LGA EWR',
     ]
     results = []
     seen_titles = set()
@@ -650,13 +642,13 @@ def get_google_news():
     """
     print('[Google News] Scanning real aviation news...')
     queries = [
-        'american airlines cancelled JFK flights',
+        'delta airlines cancelled JFK flights',
         'delta airlines cancelled JFK delayed',
-        'united airlines flight cancellations EWR',
+        'delta airlines flight cancellations EWR',
         'FAA ground stop JFK LGA EWR',
         'JFK airport closure today',
-        'airline strike New York 2026',
-        'flight cancellations JFK today',
+        'delta airlines strike New York 2026',
+        'delta flight cancellations JFK today',
         'LGA delays cancelled flights today',
         'EWR Newark flights cancelled',
         'New York airport flight disruptions',
@@ -708,7 +700,7 @@ def detect_airline(text):
     for key, al in AIRLINES.items():
         if al['name'].lower() in text_lower or key in text_lower:
             return key
-    return random.choice(list(AIRLINES.keys()))
+    return 'delta'
 
 def detect_event(text):
     text_lower = text.lower()
@@ -733,16 +725,16 @@ def get_gemini_trends():
     print('[Gemini Trends] Searching real-time aviation news via Gemini...')
     today = datetime.now().strftime('%B %d, %Y')
 
-    prompt = f"""Today is {today}. Search Google News RIGHT NOW and find the top 3 real US airline crisis events happening today at New York area airports (JFK, LGA, EWR).
+    prompt = f"""Today is {today}. Search Google News RIGHT NOW and find the top 3 real Delta Air Lines crisis events happening today at New York area airports (JFK, LGA, EWR).
 
 For each event return ONLY this JSON format, nothing else:
 [
-  {{"airline": "american|united|delta|british|japan", "airport_code": "JFK", "city": "New York", "event": "Mass Cancellations", "headline": "exact news headline"}},
+  {{"airline": "delta", "airport_code": "JFK", "city": "New York", "event": "Mass Cancellations", "headline": "exact news headline"}},
   ...
 ]
 
-Focus on: cancellations, delays, ground stops, strikes, diversions, IT outages at JFK, LGA, or EWR.
-Only real events from today. If nothing at NY airports today, use most recent from last 48 hours."""
+Focus on: Delta cancellations, delays, ground stops, strikes, diversions, IT outages at JFK, LGA, or EWR.
+Only real events from today. If nothing at NY airports today, use most recent Delta news from last 48 hours."""
 
     text = None
     for attempt in range(len(_GEMINI_KEYS) * 2):  # rotate through all keys, retry each up to 2x
@@ -787,9 +779,9 @@ Only real events from today. If nothing at NY airports today, use most recent fr
         results = []
 
         for ev_data in events[:3]:
-            al_key = ev_data.get('airline', 'american')
+            al_key = ev_data.get('airline', 'delta')
             if al_key not in AIRLINES:
-                al_key = detect_airline(ev_data.get('headline', ''))
+                al_key = 'delta'
             ap_code = ev_data.get('airport_code', 'ATL')
             ap = next((a for a in AIRPORTS_DB if a['c'] == ap_code), None)
             if not ap:
@@ -839,13 +831,12 @@ def get_low_competition_keywords(count=100):
 
     prompt = f"""You are an SEO expert for US airline passenger rights in {year}.
 
-Find 100 low-competition, high call-intent keywords for these airlines:
-American Airlines, Delta Air Lines, United Airlines, British Airways, Japan Airlines
+Find 100 low-competition, high call-intent keywords for Delta Air Lines.
 
 Rules:
 - Each keyword must have CLEAR call intent (passenger needs help NOW)
 - Focus on: refunds, cancellations, delays, compensation, denied boarding, lost luggage, missed connections
-- Include specific airport codes (ATL, LAX, ORD, DFW, JFK, etc.)
+- Include specific airport codes (JFK, LGA, EWR, ATL, LAX, ORD, DFW, etc.)
 - Avoid generic keywords — be very specific
 - Mix: city-specific, problem-specific, amount-specific, action-specific
 
@@ -853,10 +844,10 @@ Return ONLY a JSON array of 100 strings, no other text:
 ["keyword 1", "keyword 2", ...]
 
 Examples of good keywords:
-- "american airlines refund not received after 30 days"
-- "delta cancelled flight atlanta compensation how much"
-- "united airlines denied boarding ord what to do"
-- "british airways lost luggage jfk claim process"
+- "delta airlines refund not received after 30 days"
+- "delta cancelled flight jfk compensation how much"
+- "delta airlines denied boarding jfk what to do"
+- "delta airlines lost luggage jfk claim process"
 - "how long delta refund take credit card"
 """
 
@@ -1585,10 +1576,10 @@ def get_google_trends_rss():
     prompt = f"""Today is {today}. Search Google Trends USA RIGHT NOW.
 
 Find the top 5 trending search queries related to:
-- airline cancellations or delays at JFK, LGA, or EWR
-- New York airport closures or ground stops
-- flight compensation or refunds for New York travelers
-- airline strikes or disruptions affecting New York airports
+- Delta Air Lines cancellations or delays at JFK, LGA, or EWR
+- New York airport closures or ground stops affecting Delta
+- Delta flight compensation or refunds for New York travelers
+- Delta strikes or disruptions affecting New York airports
 
 Return ONLY this JSON format, nothing else:
 [
@@ -2692,9 +2683,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;col
       <div class="dropdown">
         <button class="dropdown-toggle">Airlines</button>
         <div class="dropdown-menu">
-          <a href="{SITE_BASE_URL}/delta-airlines.html">✈️ Delta Airlines</a>
-          <a href="{SITE_BASE_URL}/united-airlines.html">🌎 United Airlines</a>
-          <a href="{SITE_BASE_URL}/american-airlines.html">🦅 American Airlines</a>
+          <a href="{SITE_BASE_URL}/delta-airlines.html">✈️ Delta Air Lines</a>
         </div>
       </div>
       <a href="{SITE_BASE_URL}/#why">Why Us</a>
@@ -2833,8 +2822,6 @@ body{{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;col
         <h4>Airlines</h4>
         <ul>
           <li><a href="{SITE_BASE_URL}/delta-airlines.html">Delta Air Lines</a></li>
-          <li><a href="{SITE_BASE_URL}/united-airlines.html">United Airlines</a></li>
-          <li><a href="{SITE_BASE_URL}/american-airlines.html">American Airlines</a></li>
         </ul>
       </div>
       <div class="footer-section">
@@ -3023,10 +3010,98 @@ def ping_bing(pages):
 
 
 # ══════════════════════════════════════════
-# GOOGLE INDEXING API — for Blogger pages
+# GOOGLE INDEXING API — JWT/RS256
 # ══════════════════════════════════════════
-def ping_google(blogger_urls):
-    pass
+def ping_google(pages):
+    """
+    Submit URLs to Google Indexing API using service account JWT (RS256).
+    Requires GOOGLE_SERVICE_ACCOUNT_KEY secret (JSON key file content).
+    """
+    if not GOOGLE_SERVICE_ACCOUNT_KEY:
+        print('[Google Index] No GOOGLE_SERVICE_ACCOUNT_KEY — skipping')
+        return 0
+
+    try:
+        import json as _json
+        import base64 as _base64
+        import hashlib as _hashlib
+        import hmac as _hmac
+        import struct as _struct
+
+        sa = _json.loads(GOOGLE_SERVICE_ACCOUNT_KEY)
+        private_key_pem = sa['private_key']
+        client_email    = sa['client_email']
+
+        # ── Build JWT ──
+        now = int(time.time())
+        header  = _base64.urlsafe_b64encode(_json.dumps({'alg':'RS256','typ':'JWT'}).encode()).rstrip(b'=').decode()
+        payload = _base64.urlsafe_b64encode(_json.dumps({
+            'iss': client_email,
+            'sub': client_email,
+            'aud': 'https://accounts.google.com/o/oauth2/token',
+            'scope': 'https://www.googleapis.com/auth/indexing',
+            'iat': now,
+            'exp': now + 3600,
+        }).encode()).rstrip(b'=').decode()
+        signing_input = f'{header}.{payload}'.encode()
+
+        # ── Sign with RSA-SHA256 via cryptography library ──
+        try:
+            from cryptography.hazmat.primitives import hashes, serialization
+            from cryptography.hazmat.primitives.asymmetric import padding
+            from cryptography.hazmat.backends import default_backend
+            private_key = serialization.load_pem_private_key(
+                private_key_pem.encode(), password=None, backend=default_backend())
+            signature = private_key.sign(signing_input, padding.PKCS1v15(), hashes.SHA256())
+            sig_b64 = _base64.urlsafe_b64encode(signature).rstrip(b'=').decode()
+        except ImportError:
+            print('[Google Index] cryptography library not available — skipping')
+            return 0
+
+        jwt_token = f'{header}.{payload}.{sig_b64}'
+
+        # ── Exchange JWT for access token ──
+        token_resp = requests.post(
+            'https://accounts.google.com/o/oauth2/token',
+            data={'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer', 'assertion': jwt_token},
+            timeout=15)
+        if token_resp.status_code != 200:
+            print(f'[Google Index] Token error: {token_resp.status_code} {token_resp.text[:100]}')
+            return 0
+
+        access_token = token_resp.json().get('access_token', '')
+        if not access_token:
+            print('[Google Index] No access token received')
+            return 0
+
+        # ── Submit URLs ──
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+        }
+        success = 0
+        urls = [f'{SITE_BASE_URL}/pages/{p["slug"]}' for p in pages[:5]]
+        for url in urls:
+            try:
+                r = requests.post(
+                    'https://indexing.googleapis.com/v3/urlNotifications:publish',
+                    json={'url': url, 'type': 'URL_UPDATED'},
+                    headers=headers, timeout=15)
+                if r.status_code == 200:
+                    success += 1
+                    print(f'  [Google Index] ✅ {url[-60:]}')
+                else:
+                    print(f'  [Google Index] ❌ {r.status_code} {r.text[:80]}')
+                time.sleep(0.5)
+            except Exception as e:
+                print(f'  [Google Index] Error: {e}')
+
+        print(f'[Google Index] {success}/{len(urls)} URLs submitted')
+        return success
+
+    except Exception as e:
+        print(f'[Google Index] Fatal error: {e}')
+        return 0
 
 
 # ══════════════════════════════════════════
@@ -3211,6 +3286,7 @@ def main():
         gh_ok = publish_github(gh_pages)
         ensure_indexnow_key_file()
         ping_bing(gh_pages)
+        ping_google(gh_pages)
 
         # Track which platform each slug was published to (for internal links next run)
         for p in gh_pages:
