@@ -2305,7 +2305,7 @@ def call_api(prompt):
             if r.status_code == 200:
                 return r.json()['candidates'][0]['content']['parts'][0]['text']
             if r.status_code == 429:
-                wait = 10 * (attempt + 1)
+                wait = 65  # fixed 65s — ensures we exit the 1-min rate-limit window
                 print(f'  [Gemini key#{attempt % len(_GEMINI_KEYS) + 1}] 429 — rotating key, waiting {wait}s...')
                 time.sleep(wait)
                 continue
