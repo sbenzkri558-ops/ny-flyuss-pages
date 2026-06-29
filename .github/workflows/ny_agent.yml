@@ -45,4 +45,4 @@ jobs:
           git config user.email "agent@flyuss.com"
           git add ny_published_slugs.json ny_daily_queue.json 2>/dev/null || true
           git diff --cached --quiet || git commit -m "chore: update NY agent state [skip ci]"
-          git push
+          git pull --rebase origin main && git push || true
