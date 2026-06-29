@@ -1,15 +1,15 @@
-name: NY FlyUSS SEO Agent
+name: NY SEO Agent — Delta JFK/LGA/EWR
 
 on:
   schedule:
+    # Every 30 minutes → 10 runs/day × 5 pages = 50 pages/day
     - cron: '0,30 * * * *'
   workflow_dispatch:
 
 jobs:
   run-agent:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repo
@@ -23,26 +23,26 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install requests cryptography
 
       - name: Run NY agent
         env:
-          GEMINI_API_KEY:   ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
-          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
-          GROQ_API_KEY:     ${{ secrets.GROQ_API_KEY }}
-          GROQ_API_KEY_2:   ${{ secrets.GROQ_API_KEY_2 }}
-          GH_TOKEN:         ${{ secrets.GH_TOKEN }}
-          NY_PAGES_REPO:    ${{ secrets.NY_PAGES_REPO }}
-          NY_INDEXNOW_KEY:  ${{ secrets.NY_INDEXNOW_KEY }}
-          NY_SITE_URL:      https://ny.flyuss.com
+          GROQ_API_KEY:               ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_2:             ${{ secrets.GROQ_API_KEY_2 }}
+          GROQ_API_KEY_3:             ${{ secrets.GROQ_API_KEY_3 }}
+          GEMINI_API_KEY:             ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_2:           ${{ secrets.GEMINI_API_KEY_2 }}
+          GH_TOKEN:                   ${{ secrets.GH_TOKEN }}
+          NY_PAGES_REPO:              ${{ secrets.NY_PAGES_REPO }}
+          NY_INDEXNOW_KEY:            ${{ secrets.NY_INDEXNOW_KEY }}
+          NY_SITE_URL:                https://ny.flyuss.com
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
         run: python agent_ny.py
 
-      - name: Commit changes
+      - name: Commit state files
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --cached --quiet || git commit -m "🗽 NY agent run $(date -u '+%Y-%m-%d %H:%M')"
-          git pull --rebase origin main
+          git config user.name  "NY Agent"
+          git config user.email "agent@flyuss.com"
+          git add ny_published_slugs.json ny_daily_queue.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "chore: update NY agent state [skip ci]"
           git push
